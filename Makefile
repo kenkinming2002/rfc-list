@@ -1,12 +1,16 @@
 CFLAGS += -MMD
-SRCS = main.c
+
+CFLAGS += $(shell pkg-config --cflags libcurl)
+LIBS += $(shell pkg-config --libs libcurl)
+
+SRCS = main.c spawn.c
 
 .PHONY: clean depclean
 
 all: rfc-list
 
 rfc-list: $(SRCS:.c=.o)
-	$(CC) -o $@ $(SRCS:.c=.o)
+	$(CC) -o $@ $(SRCS:.c=.o) $(LIBS)
 
 clean: depclean
 	- rm -f $(SRCS:.c=.o)
