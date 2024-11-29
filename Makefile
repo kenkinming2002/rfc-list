@@ -1,4 +1,4 @@
-CFLAGS += -MMD
+CPPFLAGS += -MMD
 
 CFLAGS += $(shell pkg-config --cflags libcurl)
 LIBS += $(shell pkg-config --libs libcurl)
@@ -10,7 +10,7 @@ SRCS = main.c spawn.c
 all: rfc-list
 
 rfc-list: $(SRCS:.c=.o)
-	$(CC) -o $@ $(SRCS:.c=.o) $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SRCS:.c=.o) $(LIBS)
 
 clean: depclean
 	- rm -f $(SRCS:.c=.o)
