@@ -1,3 +1,5 @@
+DESTDIR ?= /usr/local
+
 CPPFLAGS += -MMD
 
 CFLAGS += $(shell pkg-config --cflags libcurl)
@@ -5,7 +7,7 @@ LIBS += $(shell pkg-config --libs libcurl)
 
 SRCS = main.c spawn.c
 
-.PHONY: clean depclean
+.PHONY: clean depclean install
 
 all: rfc-list
 
@@ -17,5 +19,8 @@ clean: depclean
 
 depclean:
 	- rm -f $(SRCS:.c=.d)
+
+install: rfc-list
+	install -m 0755 rfc-list $(DESTDIR)/bin
 
 -include $(SRCS:.c=.d)
