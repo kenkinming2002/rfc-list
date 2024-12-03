@@ -9,6 +9,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include <errno.h>
+
 static int fetch(const char *url, FILE *file)
 {
   CURL *curl = curl_easy_init();
@@ -179,13 +181,6 @@ int main()
     return -1;
   }
 
-  struct child pager;
-  if(spawn_pager(&pager, SPAWN_FLAG_REDIRECT_STDIN) == -1)
-  {
-    fprintf(stderr, "Error: Failed to spawn pager.\n");
-    return -1;
-  }
-
   char *rfc_index_text;
   if(!(rfc_index_text = fetch_text("https://www.rfc-editor.org/rfc/rfc-index.txt")))
   {
@@ -206,8 +201,21 @@ int main()
     return -1;
   }
 
+  if(waitpid(fzf.pid, NULL, 0) == -1)
+  {
+    fprintf(stderr, "Error: Failed to wait for fzf to exit: %s\n", strerror(errno));
+    return -1;
+  }
+
   char *rfc_url;
   asprintf(&rfc_url, "https://www.rfc-editor.org/rfc/rfc%u.txt", id);
+
+  struct child pager;
+  if(spawn_pager(&pager, SPAWN_FLAG_REDIRECT_STDIN) == -1)
+  {
+    fprintf(stderr, "Error: Failed to spawn pager.\n");
+    return -1;
+  }
 
   if(fetch(rfc_url, pager.stdin) != 0)
   {
@@ -221,5 +229,10 @@ int main()
     return -1;
   }
 
-  while(wait(NULL) != -1);
+  if(waitpid(pager.pid, NULL, 0) == -1)
+  {
+    fprintf(stderr, "Error: Failed to wait for pager to exit: %s\n", strerror(errno));
+    return -1;
+  }
+
 }
