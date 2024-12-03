@@ -38,6 +38,7 @@ static char *fetch_text(const char *url)
   if(fetch(url, file) != 0)
     return NULL;
 
+  fputc('\0', file);
   fclose(file);
   return data;
 }
