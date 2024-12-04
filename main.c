@@ -126,10 +126,17 @@ static int spawn_pager_impl(struct child *child, int flags, char *name)
   return spawnvp(child, flags, name, argv);
 }
 
+static int spawn_pager_impl2(struct child *child, int flags, char *command)
+{
+  char *name = "sh";
+  char *argv[] = {name, "-c", command, NULL};
+  return spawnvp(child, flags, name, argv);
+}
+
 static int spawn_pager(struct child *child, int flags)
 {
   char *pager;
-  if((pager = getenv("PAGER")) && spawn_pager_impl(child, flags, pager) == 0)
+  if((pager = getenv("PAGER")) && spawn_pager_impl2(child, flags, pager) == 0)
     return 0;
 
   if(spawn_pager_impl(child, flags, "less") == 0) return 0;
