@@ -13,6 +13,6 @@ $ make install
 
 ## Caveat
 Because we are fetching the rfc index document every time the program is used,
-there is a non-significant latency. A better and much simpler approach is
-probably to just download all rfc documents in advance and grep, find, fzf, ...
-the downloaded documents instead.
+there is a significant latency. A better and much simpler approach is probably
+to just download all rfc documents in advance and grep, find, fzf, ... the
+downloaded documents instead.
